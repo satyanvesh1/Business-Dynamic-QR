@@ -29,46 +29,67 @@ export const authOptions = {
       },
 
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            console.log("AUTH DEBUG - MISSING CREDENTIALS");
+            return null;
+          }
+
+          const email = String(credentials.email);
+          const password = String(credentials.password);
+
+          console.log("AUTH DEBUG - AUTHORIZE START");
+          console.log("AUTH DEBUG - EMAIL:", email);
+
+          const user = await prisma.user.findUnique({
+            where: {
+              email,
+            },
+          });
+
+          console.log("AUTH DEBUG - USER FOUND:", !!user);
+
+          if (!user) {
+            console.log("AUTH DEBUG - USER NOT FOUND");
+            return null;
+          }
+
+          console.log("AUTH DEBUG - ROLE:", user.role);
+          console.log(
+            "AUTH DEBUG - HASH LENGTH:",
+            user.passwordHash.length
+          );
+
+          const passwordMatch = await bcrypt.compare(
+            password,
+            user.passwordHash
+          );
+
+          console.log(
+            "AUTH DEBUG - PASSWORD MATCH:",
+            passwordMatch
+          );
+
+          if (!passwordMatch) {
+            return null;
+          }
+
+          console.log("AUTH DEBUG - LOGIN SUCCESS");
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error(
+            "AUTH DEBUG - AUTHORIZE ERROR:",
+            error
+          );
+
           return null;
         }
-
-        const email = String(credentials.email);
-        const password = String(credentials.password);
-
-        const user = await prisma.user.findUnique({
-  where: {
-    email,
-  },
-});
-
-console.log("AUTH DEBUG - USER FOUND:", !!user);
-
-if (!user) {
-  return null;
-}
-
-console.log("AUTH DEBUG - EMAIL:", user.email);
-console.log("AUTH DEBUG - ROLE:", user.role);
-console.log("AUTH DEBUG - HASH LENGTH:", user.passwordHash.length);
-
-const passwordMatch = await bcrypt.compare(
-  password,
-  user.passwordHash
-);
-
-console.log("AUTH DEBUG - PASSWORD MATCH:", passwordMatch);
-
-if (!passwordMatch) {
-  return null;
-}
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        };
       },
     }),
   ],
