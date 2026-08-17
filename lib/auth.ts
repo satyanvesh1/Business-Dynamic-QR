@@ -37,23 +37,31 @@ export const authOptions = {
         const password = String(credentials.password);
 
         const user = await prisma.user.findUnique({
-          where: {
-            email,
-          },
-        });
+  where: {
+    email,
+  },
+});
 
-        if (!user) {
-          return null;
-        }
+console.log("AUTH DEBUG - USER FOUND:", !!user);
 
-        const passwordMatch = await bcrypt.compare(
-          password,
-          user.passwordHash
-        );
+if (!user) {
+  return null;
+}
 
-        if (!passwordMatch) {
-          return null;
-        }
+console.log("AUTH DEBUG - EMAIL:", user.email);
+console.log("AUTH DEBUG - ROLE:", user.role);
+console.log("AUTH DEBUG - HASH LENGTH:", user.passwordHash.length);
+
+const passwordMatch = await bcrypt.compare(
+  password,
+  user.passwordHash
+);
+
+console.log("AUTH DEBUG - PASSWORD MATCH:", passwordMatch);
+
+if (!passwordMatch) {
+  return null;
+}
 
         return {
           id: user.id,
