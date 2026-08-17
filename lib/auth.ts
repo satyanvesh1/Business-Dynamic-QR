@@ -1,16 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { PrismaClient } from "@/app/generated/prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL,
-});
-
-const prisma = new PrismaClient({
-  adapter,
-});
+import { prisma } from "@/lib/prisma";
 
 export const authOptions = {
   providers: [
@@ -35,11 +26,8 @@ export const authOptions = {
             return null;
           }
 
-          const email = String(credentials.email);
+          const email = String(credentials.email).trim();
           const password = String(credentials.password);
-
-          console.log("AUTH DEBUG - AUTHORIZE START");
-          console.log("AUTH DEBUG - EMAIL:", email);
 
           const user = await prisma.user.findUnique({
             where: {
@@ -54,6 +42,7 @@ export const authOptions = {
             return null;
           }
 
+          console.log("AUTH DEBUG - EMAIL:", user.email);
           console.log("AUTH DEBUG - ROLE:", user.role);
           console.log(
             "AUTH DEBUG - HASH LENGTH:",
@@ -71,6 +60,7 @@ export const authOptions = {
           );
 
           if (!passwordMatch) {
+            console.log("AUTH DEBUG - INVALID PASSWORD");
             return null;
           }
 
@@ -83,11 +73,7 @@ export const authOptions = {
             role: user.role,
           };
         } catch (error) {
-          console.error(
-            "AUTH DEBUG - AUTHORIZE ERROR:",
-            error
-          );
-
+          console.error("AUTH DEBUG - AUTHORIZE ERROR:", error);
           return null;
         }
       },
