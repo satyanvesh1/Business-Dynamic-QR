@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getServerSession } from "next-auth";
 import QRCode from "qrcode";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 type PageProps = {
@@ -12,11 +14,20 @@ type PageProps = {
 export default async function QRCodesPage({
   params,
 }: PageProps) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.email) {
+    notFound();
+  }
+
   const { id } = await params;
 
-  const business = await prisma.business.findUnique({
+  const business = await prisma.business.findFirst({
     where: {
       id,
+      owner: {
+        email: session.user.email,
+      },
     },
     include: {
       qrCodes: {

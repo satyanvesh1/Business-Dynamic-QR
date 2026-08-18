@@ -1,32 +1,39 @@
-
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PrismaClient } from "@/app/generated/prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { getServerSession } from "next-auth";
 import QRCode from "qrcode";
 
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL,
-});
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import QRStatusButton from "@/app/components/QRStatusButton";
 
-const prisma = new PrismaClient({
-  adapter,
-});
-
-export default async function QRCodeDetailsPage({
-  params,
-}: {
+type PageProps = {
   params: Promise<{
     id: string;
     qrId: string;
   }>;
-}) {
+};
+
+export default async function QRCodeDetailsPage({
+  params,
+}: PageProps) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.email) {
+    notFound();
+  }
+
   const { id, qrId } = await params;
 
   const qrCode = await prisma.qRCode.findFirst({
     where: {
       id: qrId,
       businessId: id,
+      business: {
+        owner: {
+          email: session.user.email,
+        },
+      },
     },
     include: {
       business: true,
@@ -56,6 +63,7 @@ export default async function QRCodeDetailsPage({
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-5xl px-4 py-8">
+
         {/* Header */}
         <div className="mb-8">
           <Link
@@ -75,9 +83,11 @@ export default async function QRCodeDetailsPage({
         </div>
 
         <div className="grid gap-8 lg:grid-cols-2">
+
           {/* QR Preview */}
           <section className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
             <div className="text-center">
+
               <h2 className="text-xl font-bold text-gray-900">
                 QR Code
               </h2>
@@ -111,51 +121,63 @@ export default async function QRCodeDetailsPage({
 
           {/* Information */}
           <section className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+
             <h2 className="text-xl font-bold text-gray-900">
               QR Code Information
             </h2>
 
             <div className="mt-6 space-y-5">
+
+              {/* Business */}
               <div>
                 <p className="text-sm font-medium text-gray-500">
                   Business
                 </p>
+
                 <p className="mt-1 text-lg font-semibold text-gray-900">
                   {qrCode.business.name}
                 </p>
               </div>
 
+              {/* QR Code Name */}
               <div>
                 <p className="text-sm font-medium text-gray-500">
                   QR Code Name
                 </p>
+
                 <p className="mt-1 text-gray-900">
                   {qrCode.name}
                 </p>
               </div>
 
+              {/* Code */}
               <div>
                 <p className="text-sm font-medium text-gray-500">
                   Code
                 </p>
+
                 <p className="mt-1 break-all rounded-lg bg-gray-50 p-3 font-mono text-sm text-gray-700">
                   {qrCode.code}
                 </p>
               </div>
 
+              {/* Dynamic URL */}
               <div>
                 <p className="text-sm font-medium text-gray-500">
                   Dynamic URL
                 </p>
+
                 <p className="mt-1 break-all rounded-lg bg-gray-50 p-3 text-sm text-blue-600">
                   {qrUrl}
                 </p>
               </div>
 
+              {/* Total Scans */}
               <div>
                 <p className="text-sm font-medium text-gray-500">
                   Total Scans
                 </p>
+
                 <p className="mt-1 text-3xl font-bold text-gray-900">
                   {qrCode._count.scans}
                 </p>
@@ -164,6 +186,13 @@ export default async function QRCodeDetailsPage({
 
             {/* Actions */}
             <div className="mt-8 space-y-3">
+            
+	     <QRStatusButton
+               businessId={id}
+               qrId={qrCode.id}
+               status={qrCode.status}
+            />
+              {/* Download QR */}
               <a
                 href={qrDataUrl}
                 download={`${qrCode.code}.png`}
@@ -172,6 +201,7 @@ export default async function QRCodeDetailsPage({
                 Download PNG
               </a>
 
+              {/* Open Customer Page */}
               <a
                 href={qrUrl}
                 target="_blank"
@@ -181,6 +211,7 @@ export default async function QRCodeDetailsPage({
                 Open Customer Page
               </a>
 
+              {/* Analytics */}
               <Link
                 href={`/businesses/${id}/analytics`}
                 className="block w-full rounded-lg border border-gray-300 px-5 py-3 text-center text-sm font-semibold text-gray-700 hover:bg-gray-50"
@@ -191,8 +222,9 @@ export default async function QRCodeDetailsPage({
           </section>
         </div>
 
-        {/* Printing instructions */}
+        {/* Printing Instructions */}
         <section className="mt-8 rounded-2xl border border-blue-100 bg-blue-50 p-6">
+
           <h2 className="text-lg font-bold text-gray-900">
             How to use this QR code
           </h2>
@@ -204,7 +236,9 @@ export default async function QRCodeDetailsPage({
             <li>• The QR code opens your dynamic customer menu.</li>
             <li>• Every scan is recorded in Analytics.</li>
           </ul>
+
         </section>
+
       </div>
     </main>
   );

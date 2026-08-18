@@ -4,9 +4,16 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function POST(
+type RouteContext = {
+  params: Promise<{
+    id: string;
+    qrId: string;
+  }>;
+};
+
+export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   try {
     // --------------------------------------------------
@@ -27,15 +34,15 @@ export async function POST(
     }
 
     // --------------------------------------------------
-    // 2. Get business ID from URL
+    // 2. Get business ID and QR ID
     // --------------------------------------------------
 
-    const { id } = await params;
+    const { id, qrId } = await params;
 
-    if (!id) {
+    if (!id || !qrId) {
       return NextResponse.json(
         {
-          error: "Business ID is required",
+          error: "Business ID and QR code ID are required",
         },
         {
           status: 400,
@@ -49,47 +56,19 @@ export async function POST(
 
     const body = await request.json();
 
-    const name =
-      typeof body.name === "string"
-        ? body.name.trim()
-        : "";
-
     const status =
       typeof body.status === "string"
         ? body.status.toUpperCase()
-        : "ACTIVE";
+        : "";
 
     // --------------------------------------------------
-    // 4. Validate QR code name
+    // 4. Validate status
     // --------------------------------------------------
 
-    if (!name) {
-      return NextResponse.json(
-        {
-          error: "QR code name is required",
-        },
-        {
-          status: 400,
-        }
-      );
-    }
-
-    if (name.length > 100) {
-      return NextResponse.json(
-        {
-          error: "QR code name must be 100 characters or less",
-        },
-        {
-          status: 400,
-        }
-      );
-    }
-
-    // --------------------------------------------------
-    // 5. Validate QR status
-    // --------------------------------------------------
-
-    if (status !== "ACTIVE" && status !== "INACTIVE") {
+    if (
+      status !== "ACTIVE" &&
+      status !== "INACTIVE"
+    ) {
       return NextResponse.json(
         {
           error: "Invalid QR code status",
@@ -101,7 +80,7 @@ export async function POST(
     }
 
     // --------------------------------------------------
-    // 6. Find logged-in user
+    // 5. Find logged-in user
     // --------------------------------------------------
 
     const user = await prisma.user.findUnique({
@@ -122,20 +101,28 @@ export async function POST(
     }
 
     // --------------------------------------------------
-    // 7. Verify business ownership
+    // 6. Verify QR belongs to user's business
     // --------------------------------------------------
 
-    const business = await prisma.business.findFirst({
+    const qrCode = await prisma.qRCode.findFirst({
       where: {
-        id,
-        ownerId: user.id,
+        id: qrId,
+        businessId: id,
+        business: {
+          ownerId: user.id,
+        },
+      },
+      select: {
+        id: true,
+        businessId: true,
+        status: true,
       },
     });
 
-    if (!business) {
+    if (!qrCode) {
       return NextResponse.json(
         {
-          error: "Business not found",
+          error: "QR code not found",
         },
         {
           status: 404,
@@ -144,60 +131,41 @@ export async function POST(
     }
 
     // --------------------------------------------------
-    // 8. Generate unique dynamic QR code
+    // 7. Update QR status
     // --------------------------------------------------
 
-    let code = "";
-    let codeExists = true;
-
-    while (codeExists) {
-      const randomPart = Math.random()
-        .toString(36)
-        .substring(2, 10);
-
-      code = `${business.slug}-${randomPart}`;
-
-      const existingQRCode = await prisma.qRCode.findUnique({
+    const updatedQRCode =
+      await prisma.qRCode.update({
         where: {
-          code,
+          id: qrCode.id,
+        },
+        data: {
+          status,
         },
       });
 
-      codeExists = !!existingQRCode;
-    }
-
     // --------------------------------------------------
-    // 9. Create QR code
-    // --------------------------------------------------
-
-    const qrCode = await prisma.qRCode.create({
-      data: {
-        businessId: business.id,
-        name,
-        code,
-        status,
-      },
-    });
-
-    // --------------------------------------------------
-    // 10. Return successful response
+    // 8. Return updated QR code
     // --------------------------------------------------
 
     return NextResponse.json(
       {
         success: true,
-        qrCode,
+        qrCode: updatedQRCode,
       },
       {
-        status: 201,
+        status: 200,
       }
     );
   } catch (error) {
-    console.error("QR CODE CREATE ERROR:", error);
+    console.error(
+      "QR CODE STATUS UPDATE ERROR:",
+      error
+    );
 
     return NextResponse.json(
       {
-        error: "Failed to create QR code",
+        error: "Failed to update QR code status",
       },
       {
         status: 500,

@@ -2,31 +2,43 @@
 
 import { useEffect } from "react";
 
+type ScanTrackerProps = {
+  code: string;
+};
+
 export default function ScanTracker({
   code,
-}: {
-  code: string;
-}) {
+}: ScanTrackerProps) {
   useEffect(() => {
-    const storageKey = `qr-scan-${code}`;
+    let cancelled = false;
 
-    if (sessionStorage.getItem(storageKey)) {
-      return;
+    async function trackScan() {
+      try {
+        await fetch("/api/qr/scan", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            code,
+          }),
+          keepalive: true,
+        });
+      } catch (error) {
+        if (!cancelled) {
+          console.error(
+            "Failed to record QR scan:",
+            error
+          );
+        }
+      }
     }
 
-    sessionStorage.setItem(storageKey, "true");
+    trackScan();
 
-    fetch("/api/qr/scan", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        code,
-      }),
-    }).catch((error) => {
-      console.error("Failed to record QR scan:", error);
-    });
+    return () => {
+      cancelled = true;
+    };
   }, [code]);
 
   return null;
