@@ -1,6 +1,8 @@
+
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 
+import StatusControl from "./StatusControl";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -15,19 +17,6 @@ function formatDate(date: Date) {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(date);
-}
-
-function getStatusClasses(status: string) {
-  switch (status) {
-    case "CONFIRMED":
-      return "bg-green-100 text-green-800";
-    case "COMPLETED":
-      return "bg-blue-100 text-blue-800";
-    case "CANCELLED":
-      return "bg-red-100 text-red-800";
-    default:
-      return "bg-yellow-100 text-yellow-800";
-  }
 }
 
 export default async function TransportRequestsPage({
@@ -100,6 +89,8 @@ export default async function TransportRequestsPage({
   return (
     <main className="min-h-screen bg-gray-100">
       <div className="mx-auto max-w-7xl px-6 py-8">
+
+        {/* HEADER */}
 
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
 
@@ -182,7 +173,7 @@ export default async function TransportRequestsPage({
           <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-12 text-center shadow-sm">
 
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-3xl">
-              🚗
+              🚕
             </div>
 
             <h2 className="mt-5 text-xl font-bold text-black">
@@ -222,13 +213,12 @@ export default async function TransportRequestsPage({
                     </a>
                   </div>
 
-                  <span
-                    className={`inline-flex w-fit rounded-full px-3 py-1.5 text-xs font-bold ${getStatusClasses(
-                      request.status
-                    )}`}
-                  >
-                    {request.status}
-                  </span>
+                  {/* STATUS CONTROL */}
+
+                  <StatusControl
+                    requestId={request.id}
+                    initialStatus={request.status}
+                  />
 
                 </div>
 
@@ -358,7 +348,7 @@ export default async function TransportRequestsPage({
                       rel="noopener noreferrer"
                       className="rounded-lg bg-green-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-green-700"
                     >
-                      💬 WhatsApp
+                      💬 WhatsApp Customer
                     </a>
 
                   </div>
@@ -370,6 +360,8 @@ export default async function TransportRequestsPage({
 
           </div>
         )}
+
+        {/* FOOTER */}
 
         <footer className="py-8 text-center">
           <p className="text-xs text-gray-500">
