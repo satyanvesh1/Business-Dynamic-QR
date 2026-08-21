@@ -13,6 +13,7 @@ export type BusinessType =
   | "RETAIL"
   | "EDUCATION"
   | "HEALTHCARE"
+  | "TRANSPORT_SERVICES"
   | "OTHER";
 
 export type BusinessTypeConfig = {
@@ -196,6 +197,19 @@ export const BUSINESS_TYPE_CONFIG: Record<
     contentPlural: "Services",
     qrLabel: "Healthcare QR",
     qrDescription: "Create QR codes for healthcare services and information.",
+  },
+
+  TRANSPORT_SERVICES: {
+    label: "Transport Services",
+    icon: "🚗",
+    experienceLabel: "Transport Services Experience",
+    experienceDescription:
+      "Explore available transport services, routes, vehicles, pricing, and availability.",
+    contentLabel: "Transport Service",
+    contentPlural: "Transport Services",
+    qrLabel: "Transport QR",
+    qrDescription:
+      "Create QR codes for transport services, routes, vehicles, and booking information.",
   },
 
   OTHER: {
