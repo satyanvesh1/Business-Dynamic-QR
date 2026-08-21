@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -15,14 +16,49 @@ function createSlug(name: string) {
   );
 }
 
+const VALID_BUSINESS_TYPES = [
+  "RESTAURANT",
+  "HOTEL",
+  "EVENT_ORGANIZER",
+  "EVENT",
+  "PROMOTION",
+  "MARKETING",
+  "SHOPPING_MALL",
+  "THEATER",
+  "SHOWROOM",
+  "REAL_ESTATE",
+  "CONVENTION",
+  "RETAIL",
+  "EDUCATION",
+  "HEALTHCARE",
+  "OTHER",
+] as const;
+
+type BusinessType = (typeof VALID_BUSINESS_TYPES)[number];
+
+function isValidBusinessType(
+  value: unknown
+): value is BusinessType {
+  return (
+    typeof value === "string" &&
+    VALID_BUSINESS_TYPES.includes(
+      value as BusinessType
+    )
+  );
+}
+
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
       return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
+        {
+          error: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
       );
     }
 
@@ -30,8 +66,12 @@ export async function POST(request: Request) {
 
     if (!body.name?.trim()) {
       return NextResponse.json(
-        { error: "Business name is required" },
-        { status: 400 }
+        {
+          error: "Business name is required",
+        },
+        {
+          status: 400,
+        }
       );
     }
 
@@ -43,27 +83,69 @@ export async function POST(request: Request) {
 
     if (!user) {
       return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
+        {
+          error: "User not found",
+        },
+        {
+          status: 404,
+        }
       );
     }
+
+    /*
+     * Business type
+     *
+     * If the frontend sends an invalid or unsupported
+     * business type, we safely fall back to OTHER.
+     */
+    const businessType: BusinessType = isValidBusinessType(
+      body.businessType
+    )
+      ? body.businessType
+      : "OTHER";
 
     const business = await prisma.business.create({
       data: {
         ownerId: user.id,
+
         name: body.name.trim(),
+
         slug: createSlug(body.name),
-        description: body.description?.trim() || null,
-        phone: body.phone?.trim() || null,
-        whatsapp: body.whatsapp?.trim() || null,
-        email: body.email?.trim() || null,
-        website: body.website?.trim() || null,
-        address: body.address?.trim() || null,
-        city: body.city?.trim() || null,
-        state: body.state?.trim() || null,
-        country: body.country?.trim() || null,
-        postalCode: body.postalCode?.trim() || null,
-        googleMapsUrl: body.googleMapsUrl?.trim() || null,
+
+        businessType,
+
+        description:
+          body.description?.trim() || null,
+
+        phone:
+          body.phone?.trim() || null,
+
+        whatsapp:
+          body.whatsapp?.trim() || null,
+
+        email:
+          body.email?.trim() || null,
+
+        website:
+          body.website?.trim() || null,
+
+        address:
+          body.address?.trim() || null,
+
+        city:
+          body.city?.trim() || null,
+
+        state:
+          body.state?.trim() || null,
+
+        country:
+          body.country?.trim() || null,
+
+        postalCode:
+          body.postalCode?.trim() || null,
+
+        googleMapsUrl:
+          body.googleMapsUrl?.trim() || null,
       },
     });
 
@@ -72,14 +154,23 @@ export async function POST(request: Request) {
         success: true,
         business,
       },
-      { status: 201 }
+      {
+        status: 201,
+      }
     );
   } catch (error) {
-    console.error("Create business error:", error);
+    console.error(
+      "Create business error:",
+      error
+    );
 
     return NextResponse.json(
-      { error: "Failed to create business" },
-      { status: 500 }
+      {
+        error: "Failed to create business",
+      },
+      {
+        status: 500,
+      }
     );
   }
 }

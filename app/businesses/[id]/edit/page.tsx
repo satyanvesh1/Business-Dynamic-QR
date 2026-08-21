@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth";
 import { redirect, notFound } from "next/navigation";
+
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import EditBusinessForm from "./EditBusinessForm";
@@ -36,7 +37,7 @@ export default async function EditBusinessPage({
 
   return (
     <main className="min-h-screen bg-gray-100">
-      <div className="mx-auto max-w-4xl px-6 py-10">
+      <div className="mx-auto max-w-5xl px-6 py-10">
         <a
           href={`/businesses/${business.id}`}
           className="text-sm font-medium text-blue-600 hover:underline"
@@ -58,6 +59,7 @@ export default async function EditBusinessPage({
               business={{
                 id: business.id,
                 name: business.name,
+                businessType: business.businessType,
                 description: business.description,
                 phone: business.phone,
                 whatsapp: business.whatsapp,

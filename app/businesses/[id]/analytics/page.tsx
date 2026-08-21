@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getServerSession } from "next-auth";
+
+import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
 type PageProps = {
@@ -32,9 +35,18 @@ export default async function AnalyticsPage({
 }: PageProps) {
   const { id } = await params;
 
-  const business = await prisma.business.findUnique({
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.email) {
+    notFound();
+  }
+
+  const business = await prisma.business.findFirst({
     where: {
       id,
+      owner: {
+        email: session.user.email,
+      },
     },
     include: {
       qrCodes: {

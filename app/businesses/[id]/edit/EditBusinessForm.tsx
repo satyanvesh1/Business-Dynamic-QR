@@ -2,10 +2,15 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  BUSINESS_TYPE_CONFIG,
+  BusinessType,
+} from "@/lib/business-types";
 
 type Business = {
   id: string;
   name: string;
+  businessType: string | null;
   description: string | null;
   phone: string | null;
   whatsapp: string | null;
@@ -20,6 +25,11 @@ type Business = {
   isPublished: boolean;
 };
 
+const BUSINESS_TYPES = Object.entries(BUSINESS_TYPE_CONFIG) as [
+  BusinessType,
+  (typeof BUSINESS_TYPE_CONFIG)[BusinessType],
+][];
+
 export default function EditBusinessForm({
   business,
 }: {
@@ -27,8 +37,15 @@ export default function EditBusinessForm({
 }) {
   const router = useRouter();
 
+  const initialBusinessType =
+    business.businessType &&
+    business.businessType in BUSINESS_TYPE_CONFIG
+      ? (business.businessType as BusinessType)
+      : "OTHER";
+
   const [form, setForm] = useState({
     name: business.name,
+    businessType: initialBusinessType,
     description: business.description || "",
     phone: business.phone || "",
     whatsapp: business.whatsapp || "",
@@ -100,15 +117,29 @@ export default function EditBusinessForm({
     }
   }
 
+  const selectedType =
+    BUSINESS_TYPE_CONFIG[form.businessType];
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Basic Information */}
       <section>
-        <h2 className="text-lg font-semibold text-gray-900">
-          Basic Information
-        </h2>
+        <div>
+          <p className="text-sm font-medium text-blue-600">
+            Business Identity
+          </p>
 
-        <div className="mt-4 grid gap-5">
+          <h2 className="mt-1 text-lg font-semibold text-gray-900">
+            Basic Information
+          </h2>
+
+          <p className="mt-1 text-sm text-gray-500">
+            Update your business name, type and description.
+          </p>
+        </div>
+
+        <div className="mt-5 space-y-6">
+          {/* Business Name */}
           <Input
             label="Business Name"
             value={form.name}
@@ -118,6 +149,99 @@ export default function EditBusinessForm({
             required
           />
 
+          {/* Business Type */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Business Type
+            </label>
+
+            <p className="mt-1 text-xs text-gray-500">
+              Changing the business type changes the terminology
+              and customer experience used in your workspace.
+            </p>
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {BUSINESS_TYPES.map(
+                ([value, config]) => {
+                  const selected =
+                    form.businessType === value;
+
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() =>
+                        updateField(
+                          "businessType",
+                          value
+                        )
+                      }
+                      className={`rounded-2xl border p-4 text-left transition ${
+                        selected
+                          ? "border-blue-500 bg-blue-50 ring-2 ring-blue-500/20"
+                          : "border-gray-200 bg-white hover:border-blue-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div
+                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl ${
+                            selected
+                              ? "bg-blue-600 text-white"
+                              : "bg-gray-100"
+                          }`}
+                        >
+                          {config.icon}
+                        </div>
+
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-bold text-gray-900">
+                              {config.label}
+                            </h3>
+
+                            {selected && (
+                              <span className="rounded-full bg-blue-600 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
+                                Selected
+                              </span>
+                            )}
+                          </div>
+
+                          <p className="mt-1 text-xs leading-5 text-gray-500">
+                            {config.experienceDescription}
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                }
+              )}
+            </div>
+
+            {/* Selected Type */}
+            <div className="mt-4 rounded-xl bg-gray-50 p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
+                Selected Business Type
+              </p>
+
+              <div className="mt-2 flex items-center gap-3">
+                <span className="text-xl">
+                  {selectedType.icon}
+                </span>
+
+                <div>
+                  <p className="text-sm font-bold text-gray-900">
+                    {selectedType.label}
+                  </p>
+
+                  <p className="text-xs text-gray-500">
+                    {selectedType.experienceLabel}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Description */}
           <TextArea
             label="Description"
             value={form.description}
@@ -268,13 +392,17 @@ export default function EditBusinessForm({
           disabled={loading}
           className="rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
         >
-          {loading ? "Saving..." : "Save Changes"}
+          {loading
+            ? "Saving..."
+            : "Save Changes"}
         </button>
 
         <button
           type="button"
           onClick={() =>
-            router.push(`/businesses/${business.id}`)
+            router.push(
+              `/businesses/${business.id}`
+            )
           }
           className="rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium hover:bg-gray-50"
         >
