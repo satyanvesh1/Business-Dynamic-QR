@@ -37,6 +37,7 @@ export default async function EditProductPage({
       business: {
         select: {
           name: true,
+          businessType: true,
         },
       },
     },
@@ -50,6 +51,7 @@ export default async function EditProductPage({
     <EditProductForm
       businessId={id}
       businessName={product.business.name}
+      businessType={product.business.businessType}
       product={{
         id: product.id,
         name: product.name,
@@ -57,6 +59,13 @@ export default async function EditProductPage({
         price: product.price?.toString() ?? null,
         imageUrl: product.imageUrl,
         status: product.status,
+
+        serviceType: product.serviceType,
+        vehicleType: product.vehicleType,
+        startingLocation: product.startingLocation,
+        destination: product.destination,
+        route: product.route,
+        availability: product.availability,
       }}
     />
   );

@@ -73,6 +73,12 @@ export async function PATCH(
         id: updatedProduct.id,
         name: updatedProduct.name,
         status: updatedProduct.status,
+        serviceType: updatedProduct.serviceType,
+        vehicleType: updatedProduct.vehicleType,
+        startingLocation: updatedProduct.startingLocation,
+        destination: updatedProduct.destination,
+        route: updatedProduct.route,
+        availability: updatedProduct.availability,
       },
     });
   } catch (error) {
@@ -191,26 +197,68 @@ export async function PUT(
         },
 
         data: {
-          name,
+  name,
 
-          description:
-            body.description !== null &&
-            body.description !== undefined &&
-            String(body.description).trim() !== ""
-              ? String(body.description).trim()
-              : null,
+  description:
+    body.description !== null &&
+    body.description !== undefined &&
+    String(body.description).trim() !== ""
+      ? String(body.description).trim()
+      : null,
 
-          price,
+  price,
 
-          imageUrl:
-            body.imageUrl !== null &&
-            body.imageUrl !== undefined &&
-            String(body.imageUrl).trim() !== ""
-              ? String(body.imageUrl).trim()
-              : null,
+  imageUrl:
+    body.imageUrl !== null &&
+    body.imageUrl !== undefined &&
+    String(body.imageUrl).trim() !== ""
+      ? String(body.imageUrl).trim()
+      : null,
 
-          status,
-        },
+  status,
+
+  serviceType:
+    body.serviceType !== null &&
+    body.serviceType !== undefined &&
+    String(body.serviceType).trim() !== ""
+      ? String(body.serviceType).trim()
+      : null,
+
+  vehicleType:
+    body.vehicleType !== null &&
+    body.vehicleType !== undefined &&
+    String(body.vehicleType).trim() !== ""
+      ? String(body.vehicleType).trim()
+      : null,
+
+  startingLocation:
+    body.startingLocation !== null &&
+    body.startingLocation !== undefined &&
+    String(body.startingLocation).trim() !== ""
+      ? String(body.startingLocation).trim()
+      : null,
+
+  destination:
+    body.destination !== null &&
+    body.destination !== undefined &&
+    String(body.destination).trim() !== ""
+      ? String(body.destination).trim()
+      : null,
+
+  route:
+    body.route !== null &&
+    body.route !== undefined &&
+    String(body.route).trim() !== ""
+      ? String(body.route).trim()
+      : null,
+
+  availability:
+    body.availability !== null &&
+    body.availability !== undefined &&
+    String(body.availability).trim() !== ""
+      ? String(body.availability).trim()
+      : null,
+},
       });
 
     return NextResponse.json({

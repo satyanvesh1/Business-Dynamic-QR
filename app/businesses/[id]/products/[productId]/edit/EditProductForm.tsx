@@ -11,32 +11,40 @@ type Product = {
   price: string | null;
   imageUrl: string | null;
   status: "ACTIVE" | "INACTIVE";
+
+  serviceType: string | null;
+  vehicleType: string | null;
+  startingLocation: string | null;
+  destination: string | null;
+  route: string | null;
+  availability: string | null;
 };
 
 type EditProductFormProps = {
   businessId: string;
   businessName: string;
+  businessType: string | null;
   product: Product;
 };
 
 export default function EditProductForm({
   businessId,
   businessName,
+  businessType,
   product,
 }: EditProductFormProps) {
   const router = useRouter();
 
-  const [name, setName] = useState(
-    product.name
+  const isTransport =
+    businessType === "TRANSPORT_SERVICES";
+
+  const [name, setName] = useState(product.name);
+  const [description, setDescription] = useState(
+    product.description ?? ""
   );
-
-  const [description, setDescription] =
-    useState(product.description ?? "");
-
   const [price, setPrice] = useState(
     product.price ?? ""
   );
-
   const [imageUrl, setImageUrl] = useState(
     product.imageUrl ?? ""
   );
@@ -46,10 +54,26 @@ export default function EditProductForm({
       product.status
     );
 
-  const [saving, setSaving] = useState(false);
-  const [deleting, setDeleting] =
-    useState(false);
+  const [serviceType, setServiceType] =
+    useState(product.serviceType ?? "");
 
+  const [vehicleType, setVehicleType] =
+    useState(product.vehicleType ?? "");
+
+  const [startingLocation, setStartingLocation] =
+    useState(product.startingLocation ?? "");
+
+  const [destination, setDestination] =
+    useState(product.destination ?? "");
+
+  const [route, setRoute] =
+    useState(product.route ?? "");
+
+  const [availability, setAvailability] =
+    useState(product.availability ?? "");
+
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState("");
 
   async function handleSubmit(
@@ -85,11 +109,9 @@ export default function EditProductForm({
         `/api/businesses/${businessId}/products/${product.id}`,
         {
           method: "PUT",
-
           headers: {
             "Content-Type": "application/json",
           },
-
           body: JSON.stringify({
             name: trimmedName,
 
@@ -109,6 +131,36 @@ export default function EditProductForm({
                 : imageUrl.trim(),
 
             status,
+
+            serviceType:
+              serviceType.trim() === ""
+                ? null
+                : serviceType.trim(),
+
+            vehicleType:
+              vehicleType.trim() === ""
+                ? null
+                : vehicleType.trim(),
+
+            startingLocation:
+              startingLocation.trim() === ""
+                ? null
+                : startingLocation.trim(),
+
+            destination:
+              destination.trim() === ""
+                ? null
+                : destination.trim(),
+
+            route:
+              route.trim() === ""
+                ? null
+                : route.trim(),
+
+            availability:
+              availability.trim() === ""
+                ? null
+                : availability.trim(),
           }),
         }
       );
@@ -196,12 +248,11 @@ export default function EditProductForm({
           </Link>
 
           <h1 className="mt-4 text-3xl font-bold text-gray-900">
-            Edit Product
+            Edit {isTransport ? "Transport Service" : "Product"}
           </h1>
 
           <p className="mt-2 text-gray-600">
-            Update {product.name} for{" "}
-            {businessName}.
+            Update {product.name} for {businessName}.
           </p>
         </div>
 
@@ -217,14 +268,16 @@ export default function EditProductForm({
               </div>
             )}
 
-            {/* PRODUCT NAME */}
+            {/* NAME */}
 
             <div>
               <label
                 htmlFor="name"
                 className="block text-sm font-semibold text-gray-700"
               >
-                Product Name
+                {isTransport
+                  ? "Service Name"
+                  : "Product Name"}
               </label>
 
               <input
@@ -254,9 +307,7 @@ export default function EditProductForm({
                 rows={4}
                 value={description}
                 onChange={(event) =>
-                  setDescription(
-                    event.target.value
-                  )
+                  setDescription(event.target.value)
                 }
                 className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-black"
               />
@@ -285,11 +336,160 @@ export default function EditProductForm({
               />
 
               <p className="mt-1 text-xs text-gray-500">
-                Enter the exact selling price.
+                Enter the exact selling or starting price.
               </p>
             </div>
 
-            {/* IMAGE URL */}
+            {/* TRANSPORT DETAILS */}
+
+            {isTransport && (
+              <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6">
+                <h2 className="text-lg font-bold text-gray-900">
+                  Transport Details
+                </h2>
+
+                <p className="mt-1 text-sm text-gray-600">
+                  These details are displayed to customers
+                  on your Transport QR page.
+                </p>
+
+                <div className="mt-5 space-y-5">
+
+                  <div>
+                    <label
+                      htmlFor="serviceType"
+                      className="block text-sm font-semibold text-gray-700"
+                    >
+                      Service Type
+                    </label>
+
+                    <input
+                      id="serviceType"
+                      type="text"
+                      value={serviceType}
+                      onChange={(event) =>
+                        setServiceType(event.target.value)
+                      }
+                      placeholder="Example: Airport Transfer"
+                      className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:border-black"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="vehicleType"
+                      className="block text-sm font-semibold text-gray-700"
+                    >
+                      Vehicle Type
+                    </label>
+
+                    <input
+                      id="vehicleType"
+                      type="text"
+                      value={vehicleType}
+                      onChange={(event) =>
+                        setVehicleType(event.target.value)
+                      }
+                      placeholder="Example: Sedan / SUV / Auto"
+                      className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:border-black"
+                    />
+                  </div>
+
+                  <div className="grid gap-5 sm:grid-cols-2">
+
+                    <div>
+                      <label
+                        htmlFor="startingLocation"
+                        className="block text-sm font-semibold text-gray-700"
+                      >
+                        Starting Location
+                      </label>
+
+                      <input
+                        id="startingLocation"
+                        type="text"
+                        value={startingLocation}
+                        onChange={(event) =>
+                          setStartingLocation(
+                            event.target.value
+                          )
+                        }
+                        placeholder="Example: Khammam"
+                        className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:border-black"
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="destination"
+                        className="block text-sm font-semibold text-gray-700"
+                      >
+                        Destination
+                      </label>
+
+                      <input
+                        id="destination"
+                        type="text"
+                        value={destination}
+                        onChange={(event) =>
+                          setDestination(
+                            event.target.value
+                          )
+                        }
+                        placeholder="Example: Hyderabad"
+                        className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:border-black"
+                      />
+                    </div>
+
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="route"
+                      className="block text-sm font-semibold text-gray-700"
+                    >
+                      Route
+                    </label>
+
+                    <input
+                      id="route"
+                      type="text"
+                      value={route}
+                      onChange={(event) =>
+                        setRoute(event.target.value)
+                      }
+                      placeholder="Example: Khammam → Hyderabad"
+                      className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:border-black"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="availability"
+                      className="block text-sm font-semibold text-gray-700"
+                    >
+                      Service Availability
+                    </label>
+
+                    <input
+                      id="availability"
+                      type="text"
+                      value={availability}
+                      onChange={(event) =>
+                        setAvailability(
+                          event.target.value
+                        )
+                      }
+                      placeholder="Example: 24/7 or 7 AM - 10 PM"
+                      className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:border-black"
+                    />
+                  </div>
+
+                </div>
+              </div>
+            )}
+
+            {/* IMAGE */}
 
             <div>
               <label
@@ -304,9 +504,7 @@ export default function EditProductForm({
                 type="url"
                 value={imageUrl}
                 onChange={(event) =>
-                  setImageUrl(
-                    event.target.value
-                  )
+                  setImageUrl(event.target.value)
                 }
                 placeholder="https://example.com/image.jpg"
                 className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-black"
@@ -343,12 +541,6 @@ export default function EditProductForm({
                   Unavailable
                 </option>
               </select>
-
-              <p className="mt-2 text-xs text-gray-500">
-                Available products are shown to
-                customers through the QR menu.
-                Unavailable products are hidden.
-              </p>
             </div>
 
             {/* BUTTONS */}
@@ -385,13 +577,12 @@ export default function EditProductForm({
           </p>
 
           <h2 className="mt-2 text-xl font-bold text-gray-900">
-            Delete Product
+            Delete {isTransport ? "Service" : "Product"}
           </h2>
 
           <p className="mt-2 text-sm leading-6 text-gray-500">
-            Permanently delete this product from
-            your business. This action cannot be
-            undone.
+            Permanently delete this item from your
+            business. This action cannot be undone.
           </p>
 
           <button
@@ -402,7 +593,7 @@ export default function EditProductForm({
           >
             {deleting
               ? "Deleting..."
-              : "Delete Product"}
+              : `Delete ${isTransport ? "Service" : "Product"}`}
           </button>
 
         </div>

@@ -13,16 +13,15 @@ export type BusinessType =
   | "RETAIL"
   | "EDUCATION"
   | "HEALTHCARE"
-  | "TRANSPORT_SERVICES"
   | "OTHER";
 
 export type BusinessTypeConfig = {
   label: string;
   icon: string;
-  contentLabel: string;
-  contentPlural: string;
   experienceLabel: string;
   experienceDescription: string;
+  contentLabel: string;
+  contentPlural: string;
   qrLabel: string;
   qrDescription: string;
 };
@@ -34,204 +33,194 @@ export const BUSINESS_TYPE_CONFIG: Record<
   RESTAURANT: {
     label: "Restaurant",
     icon: "🍽️",
-    contentLabel: "Product",
-    contentPlural: "Products",
-    experienceLabel: "Digital Menu",
+    experienceLabel: "Digital Menu Experience",
     experienceDescription:
-      "Customers can browse your digital menu through your QR code.",
+      "Let customers scan a QR code to view your menu and interact with your restaurant.",
+    contentLabel: "Menu Item",
+    contentPlural: "Menu Items",
     qrLabel: "Menu QR",
-    qrDescription: "Manage your digital menu QR codes.",
+    qrDescription: "Create and manage QR codes for your digital menu.",
   },
 
   HOTEL: {
     label: "Hotel",
     icon: "🏨",
+    experienceLabel: "Hotel Guest Experience",
+    experienceDescription:
+      "Provide guests with quick access to hotel services and information.",
     contentLabel: "Service",
     contentPlural: "Services",
-    experienceLabel: "Hotel Experience",
-    experienceDescription:
-      "Customers can access hotel services, dining, information and bookings.",
     qrLabel: "Hotel QR",
-    qrDescription: "Manage QR codes for your hotel experience.",
+    qrDescription: "Create QR codes for hotel services and guest information.",
   },
 
   EVENT_ORGANIZER: {
     label: "Event Organizer",
-    icon: "🎪",
-    contentLabel: "Event",
-    contentPlural: "Events",
-    experienceLabel: "Event Directory",
+    icon: "🎟️",
+    experienceLabel: "Event Experience",
     experienceDescription:
-      "Customers can discover events, schedules, registration and tickets.",
+      "Create a digital experience for events, attendees, and event information.",
+    contentLabel: "Event Item",
+    contentPlural: "Event Items",
     qrLabel: "Event QR",
-    qrDescription: "Manage QR codes for your events.",
+    qrDescription: "Create QR codes for event information and experiences.",
   },
 
   EVENT: {
     label: "Event",
-    icon: "🎟️",
-    contentLabel: "Event Content",
-    contentPlural: "Event Content",
+    icon: "🎉",
     experienceLabel: "Event Experience",
     experienceDescription:
-      "Customers can view event information, schedules and tickets.",
+      "Give attendees quick access to event information through QR codes.",
+    contentLabel: "Event Item",
+    contentPlural: "Event Items",
     qrLabel: "Event QR",
-    qrDescription: "Manage QR codes for your event experience.",
+    qrDescription: "Create QR codes for your event experience.",
   },
 
   PROMOTION: {
     label: "Promotion",
-    icon: "🎁",
-    contentLabel: "Offer",
-    contentPlural: "Offers",
+    icon: "🏷️",
     experienceLabel: "Promotion Experience",
     experienceDescription:
-      "Customers can view offers, coupons and promotional campaigns.",
+      "Connect customers to promotions, offers, and campaign information.",
+    contentLabel: "Offer",
+    contentPlural: "Offers",
     qrLabel: "Promotion QR",
-    qrDescription: "Manage QR codes for your promotions.",
+    qrDescription: "Create QR codes for promotions and offers.",
   },
 
   MARKETING: {
     label: "Marketing",
-    icon: "📣",
+    icon: "📢",
+    experienceLabel: "Marketing Experience",
+    experienceDescription:
+      "Create QR-powered marketing campaigns and customer experiences.",
     contentLabel: "Campaign",
     contentPlural: "Campaigns",
-    experienceLabel: "Campaign Experience",
-    experienceDescription:
-      "Customers can interact with your marketing campaigns.",
-    qrLabel: "Campaign QR",
-    qrDescription: "Manage QR codes for your marketing campaigns.",
+    qrLabel: "Marketing QR",
+    qrDescription: "Create QR codes for your marketing campaigns.",
   },
 
   SHOPPING_MALL: {
     label: "Shopping Mall",
     icon: "🛍️",
+    experienceLabel: "Shopping Experience",
+    experienceDescription:
+      "Help visitors discover stores, offers, services, and information.",
     contentLabel: "Store",
     contentPlural: "Stores",
-    experienceLabel: "Mall Experience",
-    experienceDescription:
-      "Customers can discover stores, offers, services and navigation.",
     qrLabel: "Mall QR",
-    qrDescription: "Manage QR codes for your shopping mall.",
+    qrDescription: "Create QR codes for stores, offers, and mall information.",
   },
 
   THEATER: {
     label: "Theater",
-    icon: "🎬",
-    contentLabel: "Show",
-    contentPlural: "Shows",
+    icon: "🎭",
     experienceLabel: "Theater Experience",
     experienceDescription:
-      "Customers can view shows, schedules and ticket information.",
+      "Give visitors access to shows, schedules, and theater information.",
+    contentLabel: "Show",
+    contentPlural: "Shows",
     qrLabel: "Theater QR",
-    qrDescription: "Manage QR codes for your theater.",
+    qrDescription: "Create QR codes for shows and theater information.",
   },
 
   SHOWROOM: {
     label: "Showroom",
     icon: "🚗",
-    contentLabel: "Product",
-    contentPlural: "Products",
     experienceLabel: "Showroom Experience",
     experienceDescription:
-      "Customers can explore products, models and submit enquiries.",
+      "Let customers explore products and showroom information using QR codes.",
+    contentLabel: "Product",
+    contentPlural: "Products",
     qrLabel: "Showroom QR",
-    qrDescription: "Manage QR codes for your showroom.",
+    qrDescription: "Create QR codes for showroom products and information.",
   },
 
   REAL_ESTATE: {
     label: "Real Estate",
     icon: "🏠",
-    contentLabel: "Property",
-    contentPlural: "Properties",
     experienceLabel: "Property Experience",
     experienceDescription:
-      "Customers can explore properties, projects and submit enquiries.",
+      "Help customers discover properties and property information through QR codes.",
+    contentLabel: "Property",
+    contentPlural: "Properties",
     qrLabel: "Property QR",
-    qrDescription: "Manage QR codes for your properties.",
+    qrDescription: "Create QR codes for property listings and information.",
   },
 
   CONVENTION: {
     label: "Convention Center",
     icon: "🏢",
-    contentLabel: "Event",
-    contentPlural: "Events",
     experienceLabel: "Convention Experience",
     experienceDescription:
-      "Customers can discover events, halls, schedules and bookings.",
+      "Provide visitors with event, venue, and schedule information.",
+    contentLabel: "Event",
+    contentPlural: "Events",
     qrLabel: "Convention QR",
-    qrDescription: "Manage QR codes for your convention center.",
+    qrDescription: "Create QR codes for convention events and information.",
   },
 
   RETAIL: {
     label: "Retail",
     icon: "🛒",
-    contentLabel: "Product",
-    contentPlural: "Products",
     experienceLabel: "Retail Experience",
     experienceDescription:
-      "Customers can browse products, offers and contact information.",
+      "Let customers discover products, offers, and store information.",
+    contentLabel: "Product",
+    contentPlural: "Products",
     qrLabel: "Retail QR",
-    qrDescription: "Manage QR codes for your retail business.",
+    qrDescription: "Create QR codes for retail products and offers.",
   },
 
   EDUCATION: {
     label: "Education",
     icon: "🎓",
-    contentLabel: "Course",
-    contentPlural: "Courses",
     experienceLabel: "Education Experience",
     experienceDescription:
-      "Customers can explore courses, admissions and educational services.",
+      "Provide students and visitors with useful educational information.",
+    contentLabel: "Course",
+    contentPlural: "Courses",
     qrLabel: "Education QR",
-    qrDescription: "Manage QR codes for your educational business.",
+    qrDescription: "Create QR codes for courses and educational information.",
   },
 
   HEALTHCARE: {
     label: "Healthcare",
     icon: "🏥",
-    contentLabel: "Service",
-    contentPlural: "Services",
     experienceLabel: "Healthcare Experience",
     experienceDescription:
-      "Customers can explore services, doctors and appointments.",
-    qrLabel: "Healthcare QR",
-    qrDescription: "Manage QR codes for your healthcare business.",
-  },
-
-  TRANSPORT_SERVICES: {
-    label: "Transport Services",
-    icon: "🚗",
+      "Provide patients with quick access to healthcare information and services.",
     contentLabel: "Service",
     contentPlural: "Services",
-    experienceLabel: "Transport Experience",
-    experienceDescription:
-      "Customers can explore transport services, vehicles, routes, pricing, availability and contact information.",
-    qrLabel: "Transport QR",
-    qrDescription:
-      "Manage QR codes for your transport services.",
+    qrLabel: "Healthcare QR",
+    qrDescription: "Create QR codes for healthcare services and information.",
   },
-
-
 
   OTHER: {
     label: "Other",
-    icon: "⚙️",
-    contentLabel: "Content",
-    contentPlural: "Content",
+    icon: "📌",
     experienceLabel: "Digital Experience",
     experienceDescription:
-      "Customers can access your business experience through your dynamic QR codes.",
-    qrLabel: "Dynamic QR",
-    qrDescription: "Manage your dynamic QR codes.",
+      "Create a QR-powered digital experience for your business.",
+    contentLabel: "Item",
+    contentPlural: "Items",
+    qrLabel: "QR Code",
+    qrDescription: "Create and manage QR codes for your business.",
   },
 };
 
 export function getBusinessTypeConfig(
   businessType: string | null | undefined
 ): BusinessTypeConfig {
-  if (businessType && businessType in BUSINESS_TYPE_CONFIG) {
-    return BUSINESS_TYPE_CONFIG[businessType as BusinessType];
+  if (
+    businessType &&
+    businessType in BUSINESS_TYPE_CONFIG
+  ) {
+    return BUSINESS_TYPE_CONFIG[
+      businessType as BusinessType
+    ];
   }
 
   return BUSINESS_TYPE_CONFIG.OTHER;

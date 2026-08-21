@@ -283,7 +283,7 @@ export default async function BusinessDetailsPage({
             label="Total Scans"
             value={totalScans}
             description="Customer interactions"
-            icon="📊"
+            icon="📈"
             href={`/businesses/${business.id}/analytics`}
           />
 
@@ -291,7 +291,7 @@ export default async function BusinessDetailsPage({
             label={typeConfig.contentPlural}
             value={business._count.products}
             description={`${activeProducts} currently active`}
-            icon="📊"
+            icon="🛠️"
             href={`/businesses/${business.id}/products`}
           />
 
@@ -299,7 +299,7 @@ export default async function BusinessDetailsPage({
             label="QR Codes"
             value={business._count.qrCodes}
             description={`${activeQrCodes} currently active`}
-            icon="📊"
+            icon="📱"
             href={`/businesses/${business.id}/qr-codes`}
           />
 
@@ -357,14 +357,14 @@ export default async function BusinessDetailsPage({
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <ActionCard
                   href={`/businesses/${business.id}/products`}
-                  icon="📊"
+                  icon="🛠️"
                   title={typeConfig.contentPlural}
                   description={`Manage your ${typeConfig.contentPlural.toLowerCase()}`}
                 />
 
                 <ActionCard
                   href={`/businesses/${business.id}/qr-codes`}
-                  icon="📊"
+                  icon="📱"
                   title={typeConfig.qrLabel}
                   description={typeConfig.qrDescription}
                 />
@@ -378,7 +378,7 @@ export default async function BusinessDetailsPage({
 
                 <ActionCard
                   href={`/businesses/${business.id}/edit`}
-                  icon="📊"
+                  icon="⚙️"
                   title="Settings"
                   description="Business settings"
                 />
